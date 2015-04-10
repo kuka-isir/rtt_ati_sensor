@@ -1,0 +1,43 @@
+<package>
+  <name>rtt_ati_sensor</name>
+  <version>1.0.0</version>
+  <description>This package contains the components of the rtt_ati_sensor package</description>
+  <maintainer email="hoarau.robotics@gmail.com">Antoine Hoarau</maintainer>
+
+  <license>LGPLv2</license>
+
+  <url type="http://isir.upmc.fr"></url>
+
+  <author>Antoine Hoarau</author>
+
+  <build_depend>ati_sensor</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>rtt</build_depend>
+  <build_depend>rtt_ros</build_depend>
+  <build_depend>rtt_rosclock</build_depend>
+  <build_depend>rtt_roscomm</build_depend>
+  <build_depend>rtt_rosparam</build_depend>
+
+  <run_depend>ati_sensor</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>rtt</run_depend>
+  <run_depend>rtt_ros</run_depend>
+  <run_depend>rtt_rosclock</run_depend>
+  <run_depend>rtt_roscomm</run_depend>
+  <run_depend>rtt_rosparam</run_depend>
+
+  <export>
+    <rtt_ros>
+      <plugin_depend>rtt_std_msgs</plugin_depend>
+      <plugin_depend>rtt_std_srvs</plugin_depend>
+      <plugin_depend>rtt_geometry_msgs</plugin_depend>
+      <plugin_depend>rtt_rosnode</plugin_depend>
+      <plugin_depend>rtt_rospack</plugin_depend>
+      <plugin_depend>rtt_rosparam</plugin_depend>
+      <plugin_depend>rtt_rosclock</plugin_depend>
+      <plugin_depend>rtt_roscomm</plugin_depend>
+    </rtt_ros>
+  </export>
+</package>
