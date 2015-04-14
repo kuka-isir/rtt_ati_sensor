@@ -17,6 +17,7 @@
 #include <rtt_roscomm/rosservice.h>
 
 namespace rtt_ati{
+static const std::string default_frame = "/ati_ft_link";
 class FTSensor : public RTT::TaskContext{
   public:
     FTSensor(std::string const& name);
@@ -32,6 +33,7 @@ protected:
   double measurement[6];
   unsigned int ft_sequence,rdt_sequence;
   int calibration_index_;
+  std::string frame_;
 };
 }
 #endif
