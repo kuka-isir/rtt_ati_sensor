@@ -1,21 +1,13 @@
 
 <launch>
-  <arg name="ip" default="192.168.100.103"/>
-  <arg name="calibration_index" default="-1"/>
-  <arg name="frame" default="/ati_ft_link"/>
-  
-    <rosparam ns="ft_sensor" subst_value="true">
-        ip: $(arg ip)
-        calibration_index: $(arg calibration_index)
-        frame: $(arg frame)
-    </rosparam>
-  
-    <include file="$(find rtt_ros)/launch/deployer.launch">
-        <arg name="DEPLOYER_ARGS" value="-s $(find rtt_ati_sensor)/scripts/ft_sensor.ops"/>
-        <arg name="NAME" value="rtt_deployer"/>
-        <arg name="DEBUG" value="false"/>
-    </include>
-  
-  
+    <arg name="ip" default="192.168.100.103"/>
+    <arg name="calibration_index" default="-1"/>
+    <arg name="frame" default="/ati_ft_link"/>
+    
+    <node name="ft_sensor" pkg="rtt_ros" type="deployer" args="-s $(find rtt_ati_sensor)/scripts/ft_sensor.ops --" output="screen">
+        <param name="ip" value="$(arg ip)"/>
+        <param name="calibration_index" value="$(arg calibration_index)"/>
+        <param name="frame" value="$(arg frame)"/>
+    </node>
 </launch>
 
