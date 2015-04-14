@@ -30,6 +30,19 @@ Or in a launch file :
 
 
 #### Integrate the Sensor in your OPS file
+
+You'll have to set the parameters using rosparam (example using a launch file):
+```xml
+<launch>
+<rosparam ns="ft_sensor" subst_value="true">
+        ip: 192.168.100.103
+        calibration_index: -1 # -1 for current
+        frame: /ati_ft_link
+ </rosparam>
+ </launch>
+```
+And add the following lines to you ops script : 
+
 ```lua
 import("rtt_ros")
 ros.import("rtt_rospack")
