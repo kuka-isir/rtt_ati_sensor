@@ -1,6 +1,14 @@
 # RTT ATI Sensor
 
-Simple Orocos RTT wrapper for the ati_sensor library.
+Simple Orocos RTT wrapper for the ati_sensor library. It uses ROS to get parameters from the parameter server and ROS services to reset the bias.
+
+###### Parameters
+* ***ip*** (string, default : 192.168.100.103) : The ip of the sensor 
+* ***calibration_index*** (integer, default : -1 [current]): The calibration file to use 
+* ***frame*** (string, default : /ati_ft_link): The output frame for rviz visualization 
+
+###### Services 
+* ***set_bias*** (std_msgs/Empty): Reset the software bias 
 
 ### Usage 
 
