@@ -10,6 +10,11 @@ Simple Orocos RTT wrapper for the ati_sensor library. It uses ROS to get paramet
 ###### Services 
 * ***set_bias*** (std_msgs/Empty): Reset the software bias 
 
+###### Topics 
+* ***wrench*** (geometry_msgs/WrenchStamped): 6D data from the F/T sensor
+
+> Note : The sequence number is ft_sequence (see the official [manual](http://www.ati-ia.com/app_content/documents/9620-05-NET%20FT.pdf) for more info) 
+
 ### Usage 
 
 The best way to launch the sensor is to first start a roscore and set the sensor's parameters : 
