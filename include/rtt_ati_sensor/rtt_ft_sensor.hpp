@@ -6,6 +6,7 @@
 #include <rtt/Component.hpp>
 #include <iostream>
 #include <boost/shared_ptr.hpp>
+#include <boost/atomic.hpp>
 #include <ati_sensor/ft_sensor.h>
 #include <geometry_msgs/WrenchStamped.h>
 #include <rtt_rosclock/rtt_rosclock.h>
@@ -115,6 +116,8 @@ protected:
      * 
      */
     std::string frame_;
+    RTT::os::Mutex lock_;
+    boost::atomic<bool> set_bias_;
 };
 }
 #endif

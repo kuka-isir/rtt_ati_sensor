@@ -11,21 +11,19 @@ rtt_ati::FTSensor::FTSensor(std::string const& name) : TaskContext(name){
 
     this->ports()->addPort("wrench",this->port_WrenchStamped);
     port_WrenchStamped.createStream(rtt_roscomm::topic(this->getName()+"/wrench"));
-    this->addOperation("setBias",&rtt_ati::FTSensor::setBias,this,RTT::OwnThread);
+    this->addOperation("setBias",&rtt_ati::FTSensor::setBias,this,RTT::ClientThread);
     ft_sensor_ = boost::shared_ptr<ati::FTSensor>(new ati::FTSensor());
-
+    set_bias_ = false;
 }
 bool rtt_ati::FTSensor::setBias(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response)
 {
-    ft_sensor_->setBias();
+    set_bias_ = true;
     return true;
 }
 
 bool rtt_ati::FTSensor::configureHook(){
     bool configured = false;
-    
-    //RTT::log().setLogLevel(RTT::Logger::Debug);
-    
+        
     //  Setting the ROS Service set_bias
     boost::shared_ptr<rtt_rosservice::ROSService> rosservice = this->getProvider<rtt_rosservice::ROSService>("rosservice");
     
@@ -66,12 +64,12 @@ bool rtt_ati::FTSensor::configureHook(){
     this->port_WrenchStamped.setDataSample(this->wrenchStamped);
     configured = ft_sensor_->init(ip_,calibration_index_,ati::command_s::REALTIME);
     this->wrenchStamped.header.frame_id = frame_;
-    //RTT::log().setLogLevel(RTT::Logger::RTT::Logger::Error);
     return configured;
 }
 
 void rtt_ati::FTSensor::updateHook(){
     ft_sensor_->getMeasurements(this->measurement,this->rdt_sequence,this->ft_sequence);
+    lock_.unlock();
     this->wrenchStamped.header.stamp = rtt_rosclock::host_now();
     this->wrenchStamped.header.seq = this->ft_sequence;
     this->wrenchStamped.wrench.force.x = measurement[0];
@@ -81,6 +79,10 @@ void rtt_ati::FTSensor::updateHook(){
     this->wrenchStamped.wrench.torque.y = measurement[4];
     this->wrenchStamped.wrench.torque.z = measurement[5];
     this->port_WrenchStamped.write(wrenchStamped);
+    if(set_bias_){
+        set_bias_ = false;
+        ft_sensor_->setBias();
+    }
 }
 
 ORO_CREATE_COMPONENT(rtt_ati::FTSensor)
