@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 2.8.6)
 
 project(rtt_ati_sensor)
 
+SET(MAJOR_VERSION "1")
+SET(MINOR_VERSION "0")
+SET(PATCH_VERSION "0")
+set(RTT_ATI_SENSOR_VERSION
+  ${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION})
+
 find_package(catkin REQUIRED
   COMPONENTS 
   rtt_ros 
@@ -14,7 +20,7 @@ find_package(catkin REQUIRED
 #find_package(orocos_kdl REQUIRED)
 #find_package(Eigen REQUIRED)
 
-add_definitions(-DRTTCOMPONENT)
+
 
 include_directories(
   include
@@ -22,7 +28,7 @@ include_directories(
   ${Eigen_INCLUDE_DIRS}
   ${orocos_kdl_INCLUDE_DIRS})
 
-orocos_component(rtt_ati_sensor
+orocos_component(${PROJECT_NAME}
   src/rtt_ft_sensor.cpp
   )
 
@@ -47,3 +53,26 @@ install(DIRECTORY include/${PROJECT_NAME}/
   FILES_MATCHING PATTERN "*.hpp"
   PATTERN ".svn" EXCLUDE
   )
+  
+  
+###################
+## Documentation ##
+###################
+
+
+# add a target to generate API documentation with Doxygen
+if(BUILD_DOCUMENTATION)
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile @ONLY)
+        execute_process(
+        COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc
+        #COMMENT "Generating API documentation with Doxygen" VERBATIM
+        #DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile
+        )
+else()
+message(FATAL_ERROR
+      "Doxygen is needed to build the documentation. Please install it correctly")
+endif()
+endif()
