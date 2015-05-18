@@ -35,7 +35,7 @@ before_install:
   - git clone --recursive https://github.com/orocos-toolchain/orocos_toolchain -b toolchain-2.8 src/orocos/orocos_toolchain
 
 install:
-  - catkin_make_isolated --install -j2 --cmake-args $EXTRA_CMAKE_ARGS
+  - catkin_make_isolated --install -j1 --cmake-args $EXTRA_CMAKE_ARGS
   - source install_isolated/setup.sh
   - mkdir -p ~/catkin_ws/src
   - cd ~/catkin_ws/src
