@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/kuka-isir/rtt_ati_sensor.svg?branch=master)](https://travis-ci.org/kuka-isir/rtt_ati_sensor)
 # RTT ATI Sensor
 
 Simple Orocos RTT wrapper for the ati_sensor library. It uses ROS to get parameters from the parameter server and ROS services to reset the bias.
