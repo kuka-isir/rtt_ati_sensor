@@ -43,8 +43,8 @@ before_install:
 
 install:
   - pushd ~/catkin_ws
-  - catkin_make -j2 
+  - catkin_make -j1
 
 script:
   - source devel/setup.bash
-  - catkin_make 
+  - catkin_make -j1
