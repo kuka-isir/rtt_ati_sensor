@@ -9,10 +9,13 @@ compiler:
   - gcc
   
 before_install:
+  # Gcc 4.8
   - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
   - sudo apt-get update -qq
   - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+  # OmniORB 4
+  - sudo apt-get install -y libomniorb4-dev omniidl libomniorb4* omni* libblas* liblapack* f2c omniidl-python omniorb-nameserver libomniorb4-1-dbg libomniorb4-dev omniorb omniorb-idl python-omniorb-dbg python-omniorb-doc
   # Define some config vars
   - export ROS_DISTRO=hydro
   - export CI_SOURCE_PATH=$(pwd)
