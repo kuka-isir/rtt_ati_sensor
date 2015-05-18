@@ -1,48 +1,42 @@
-# Adapted from https://github.com/jbohren/conman
 language:
   - cpp
-  - python
-  - ruby
-  - lua
+  
 python:
   - "2.7"
-
 sudo: required
 
 compiler:
   - gcc
+  
 before_install:
   # Define some config vars
   - export ROS_DISTRO=hydro
   - export CI_SOURCE_PATH=$(pwd)
-  - export EXTRA_CMAKE_ARGS="-DENABLE_CORBA=ON -DCORBA_IMPLEMENTATION=OMNIORB"
-  # Bootstrap a minimal ROS installation
-  - git clone https://github.com/jhu-lcsr/ros_ci_tools /tmp/ros_ci_tools && export PATH=/tmp/ros_ci_tools:$PATH
-  - ros_ci_bootstrap public
+  # Install OROCOS Toolchain
+  - export OROCOS_TARGET=gnulinux
+  - mkdir -p ~/isolated_ws/src/orocos
+  - cd ~/isolated_ws
+  - git clone --recursive https://github.com/orocos-toolchain/orocos_toolchain -b toolchain-2.8 src/orocos/orocos_toolchain
+  - catkin_make_isolated --install
+  - source install_isolated/setup.sh
+  # Install ROS
+  - sudo sh -c "echo 'deb http://packages.ros.org/ros/ubuntu $(lsb_release -cs) main' > /etc/apt/sources.list.d/ros-latest.list"
+  - wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
+  - sudo apt-get update
+  - sudo apt-get install ros-$ROS_DISTRO-desktop-full
   - source /opt/ros/$ROS_DISTRO/setup.bash
-  # Create non-isolated workspace
-  - mkdir -p ~/ws/src
-  - pushd ~/ws/src
+  - sudo -E rosdep init
+  - rosdep update
+  - mkdir -p ~/catkin_ws/src && cd ~/catkin_ws/src
+  - catkin_init_workspace
   - ln -s $CI_SOURCE_PATH
-  - git clone https://github.com/kuka-isir/ati_sensor.git
-  - git clone https://github.com/jhu-lcsr-forks/rtt_ros_integration.git
-  - pushd rtt_ros_integration
-  - find . -maxdepth 1 -type d -exec touch {}/CATKIN_IGNORE \;
-  - rm CATKIN_IGNORE
-  - rm rtt_actionlib/CATKIN_IGNORE
-  - popd
-  - rosdep install -r --from-paths ~/ws/src --ignore-src --rosdistro $ROS_DISTRO -y > /dev/null
-  # Currently waiting for this rosdep rule to be merged
-  - sudo apt-get install -qq google-mock lcov
-  - sudo pip install cpp-coveralls --use-mirrors
+  - git clone https://github.com/orocos/rtt_ros_integration.git src/rtt_ros_integration
+  - git clone https://github.com∕kuka-isir/ati_sensor
 
 install:
-  # build the normal catkin workspace
   - pushd ~/ws
   - catkin_make -j2 --cmake-args -DCMAKE_BUILD_TYPE=Debug 
-    # -DENABLE_COVERAGE=On 
 
 script:
-  # Run tests
   - source devel/setup.bash
   - catkin_make 
