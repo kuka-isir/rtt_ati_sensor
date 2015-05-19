@@ -19,8 +19,14 @@ before_install:
   - sudo apt-get install -y mongodb-clients mongodb-server -o Dpkg::Options::="--force-confdef" # default actions
   # OmniORB 4
   - sudo apt-get install -y libomniorb4-dev omniidl libomniorb4* omni* libblas* liblapack* f2c omniidl-python omniorb-nameserver libomniorb4-1-dbg libomniorb4-dev omniorb omniorb-idl python-omniorb-dbg python-omniorb-doc
-  # Define some config vars
-  - sudo apt-get install -y libboost-all-dev
+  # Install newer boost compatible with gcc 4.8.
+  - wget --no-verbose --output-document=boost-trunk.tar.bz2 http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.bz2/download
+  - export BOOST_ROOT="$TRAVIS_BUILD_DIR/../boost-trunk"
+  - export CMAKE_MODULE_PATH="$BOOST_ROOT"
+  - mkdir -p $BOOST_ROOT
+  - tar jxf boost-trunk.tar.bz2 --strip-components=1 -C $BOOST_ROOT
+  - (cd $BOOST_ROOT; ./bootstrap.sh --with-libraries=date_time,filesystem,system,iostreams,regex,python,test)
+  - (cd $BOOST_ROOT; ./b2 threading=multi --prefix=$BOOST_ROOT -d0 install)
   - export ROS_DISTRO=hydro
   - export CI_SOURCE_PATH=$(pwd)
   - export EXTRA_CMAKE_ARGS="-DENABLE_TESTS=OFF -DENABLE_CORBA=ON -DCORBA_IMPLEMENTATION=OMNIORB"
@@ -41,8 +47,8 @@ before_install:
   
 install:
   - cd ~/catkin_ws
-  - catkin_make -j1
+  - catkin_make -j1 -DBOOST_ROOT=$BOOST_ROOT
 
 script:
   - source devel/setup.bash
-  - catkin_make -j1
+  - catkin_make -j1 -DBOOST_ROOT=$BOOST_ROOT
