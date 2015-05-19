@@ -20,13 +20,15 @@ find_package(catkin REQUIRED
 #find_package(orocos_kdl REQUIRED)
 #find_package(Eigen REQUIRED)
 
-
+find_package(Boost REQUIRED COMPONENTS atomic)
 
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   ${Eigen_INCLUDE_DIRS}
-  ${orocos_kdl_INCLUDE_DIRS})
+  ${orocos_kdl_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIRS}
+  )
 
 orocos_component(${PROJECT_NAME}
   src/rtt_ft_sensor.cpp
@@ -34,7 +36,9 @@ orocos_component(${PROJECT_NAME}
 
 set(COMPONENT_LIBS
   ${orocos_kdl_LIBRARIES}
-  ${catkin_LIBRARIES})
+  ${catkin_LIBRARIES}
+  ${Boost_LIBRARIES}
+  )
 
 target_link_libraries(${PROJECT_NAME} ${COMPONENT_LIBS})
 
