@@ -20,6 +20,7 @@ before_install:
   # OmniORB 4
   - sudo apt-get install -y libomniorb4-dev omniidl libomniorb4* omni* libblas* liblapack* f2c omniidl-python omniorb-nameserver libomniorb4-1-dbg libomniorb4-dev omniorb omniorb-idl python-omniorb-dbg python-omniorb-doc
   # Define some config vars
+  - sudo apt-get install -y libboost-all-dev
   - export ROS_DISTRO=hydro
   - export CI_SOURCE_PATH=$(pwd)
   - export EXTRA_CMAKE_ARGS="-DENABLE_TESTS=OFF -DENABLE_CORBA=ON -DCORBA_IMPLEMENTATION=OMNIORB"
