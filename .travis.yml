@@ -37,7 +37,7 @@ before_install:
   - catkin_init_workspace
   - ln -s $CI_SOURCE_PATH
   - git clone https://github.com/orocos/rtt_ros_integration.git src/rtt_ros_integration
-  - git clone https://github.com∕kuka-isir/ati_sensor
+  - git clone https://github.com/kuka-isir/ati_sensor.git
   
 install:
   - cd ~/catkin_ws
