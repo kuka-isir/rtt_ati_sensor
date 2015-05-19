@@ -20,7 +20,7 @@ find_package(catkin REQUIRED
 #find_package(orocos_kdl REQUIRED)
 #find_package(Eigen REQUIRED)
 
-find_package(Boost 1.53 REQUIRED COMPONENTS atomic)
+find_package(Boost 1.53 REQUIRED)
 
 include_directories(
   include
