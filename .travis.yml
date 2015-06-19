@@ -25,7 +25,7 @@ before_install:
   - export CMAKE_MODULE_PATH="$BOOST_ROOT"
   - mkdir -p $BOOST_ROOT
   - tar jxf boost-trunk.tar.bz2 --strip-components=1 -C $BOOST_ROOT
-  - (cd $BOOST_ROOT; ./bootstrap.sh --with-libraries=date_time,filesystem,system,iostreams,regex,python,test)
+  - (cd $BOOST_ROOT; ./bootstrap.sh --with-libraries=atomic)
   - (cd $BOOST_ROOT; ./b2 threading=multi --prefix=$BOOST_ROOT -d0 install)
   - export ROS_DISTRO=hydro
   - export CI_SOURCE_PATH=$(pwd)
@@ -34,7 +34,7 @@ before_install:
   - sudo sh -c "echo 'deb http://packages.ros.org/ros/ubuntu $(lsb_release -cs) main' > /etc/apt/sources.list.d/ros-latest.list"
   - wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
   - sudo apt-get update
-  - sudo apt-get install ros-$ROS_DISTRO-orocos-toolchain ros-$ROS_DISTRO-rtt*
+  - sudo apt-get install -y -qq ros-$ROS_DISTRO-orocos-toolchain ros-$ROS_DISTRO-rtt*
   - source /opt/ros/$ROS_DISTRO/setup.bash
   - sudo -E rosdep init
   - rosdep update
