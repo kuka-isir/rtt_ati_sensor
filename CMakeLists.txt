@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.8.6)
 
 project(rtt_ati_sensor)
 
+set(CMAKE_BUILD_TYPE Release)
+
 SET(MAJOR_VERSION "1")
 SET(MINOR_VERSION "0")
 SET(PATCH_VERSION "0")
