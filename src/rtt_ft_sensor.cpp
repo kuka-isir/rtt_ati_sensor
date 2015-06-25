@@ -9,7 +9,7 @@ rtt_ati::FTSensor::FTSensor(std::string const& name) : TaskContext(name){
     this->addProperty("frame",frame_).doc("(string) The name of the frame for the wrenchStamped msg (default : "+rtt_ati::default_frame+" )");
     this->addProperty("calibration_index", calibration_index_).doc("(uint) The calibration index to use (default: current)");
 
-    this->ports()->addPort("wrench",this->port_WrenchStamped);
+    this->ports()->addPort("WrenchStamped",this->port_WrenchStamped);
     port_WrenchStamped.createStream(rtt_roscomm::topic(this->getName()+"/wrench"));
     this->addOperation("setBias",&rtt_ati::FTSensor::setBias,this,RTT::ClientThread);
     ft_sensor_ = boost::shared_ptr<ati::FTSensor>(new ati::FTSensor());
