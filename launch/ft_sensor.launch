@@ -2,7 +2,7 @@
 <launch>
     <arg name="ip" default="192.168.100.103"/>
     <arg name="calibration_index" default="-1"/>
-    <arg name="frame" default="/ati_ft_link"/>
+    <arg name="frame" default="/ati_link"/>
     
     <node name="ft_sensor" pkg="rtt_ros" type="deployer" args="-s $(find rtt_ati_sensor)/scripts/ft_sensor.ops --" output="screen">
         <param name="ip" value="$(arg ip)"/>
