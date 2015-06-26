@@ -53,14 +53,21 @@ class FTSensor : public RTT::TaskContext{
      */
     void updateHook();
     /**
-     * @brief Set the bias for the sensor
+     * @brief Set the bias for the sensor (rosservice)
      * 
      * @param request Empty
      * @param response Empty
      * @return bool
      */
-    bool setBias(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response);
-    
+    bool setBiasROS(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response);
+    /**
+     * @brief Set the bias for the sensor (orocos)
+     * 
+     * @param request Empty
+     * @param response Empty
+     * @return bool
+     */
+    bool setBias();    
 protected:
     /**
      * @brief The sensor shared pointer from libati_sensor

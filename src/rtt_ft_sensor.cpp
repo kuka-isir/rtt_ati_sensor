@@ -11,11 +11,20 @@ rtt_ati::FTSensor::FTSensor(std::string const& name) : TaskContext(name){
 
     this->ports()->addPort("WrenchStamped",this->port_WrenchStamped);
     port_WrenchStamped.createStream(rtt_roscomm::topic(this->getName()+"/wrench"));
+    
     this->addOperation("setBias",&rtt_ati::FTSensor::setBias,this,RTT::ClientThread);
+    this->addOperation("setBiasROS",&rtt_ati::FTSensor::setBiasROS,this,RTT::ClientThread);
+    
     ft_sensor_ = boost::shared_ptr<ati::FTSensor>(new ati::FTSensor());
     set_bias_ = false;
 }
-bool rtt_ati::FTSensor::setBias(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response)
+bool rtt_ati::FTSensor::setBiasROS(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response)
+{
+    set_bias_ = true;
+    return true;
+}
+
+bool rtt_ati::FTSensor::setBias()
 {
     set_bias_ = true;
     return true;
@@ -28,7 +37,7 @@ bool rtt_ati::FTSensor::configureHook(){
     boost::shared_ptr<rtt_rosservice::ROSService> rosservice = this->getProvider<rtt_rosservice::ROSService>("rosservice");
     
     if(rosservice)
-        rosservice->connect("setBias",this->getName()+"/set_bias","std_srvs/Empty");
+        rosservice->connect("setBiasROS",this->getName()+"/set_bias","std_srvs/Empty");
     else
         RTT::log(RTT::Warning) << "ROSService not available" << RTT::endlog();
     
