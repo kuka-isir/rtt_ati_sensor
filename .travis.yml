@@ -47,8 +47,8 @@ before_install:
   
 install:
   - cd ~/catkin_ws
-  - catkin_make -j1 -DBOOST_ROOT=$BOOST_ROOT
+  - catkin_make -j2 -DBOOST_ROOT=$BOOST_ROOT -DCMAKE_BUILD_TYPE=Debug
 
 script:
   - source devel/setup.bash
-  - catkin_make -j1 -DBOOST_ROOT=$BOOST_ROOT
+  - catkin_make
