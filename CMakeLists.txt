@@ -5,7 +5,7 @@ project(rtt_ati_sensor)
 set(CMAKE_BUILD_TYPE Release)
 
 SET(MAJOR_VERSION "1")
-SET(MINOR_VERSION "0")
+SET(MINOR_VERSION "1")
 SET(PATCH_VERSION "0")
 set(RTT_ATI_SENSOR_VERSION
   ${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION})
@@ -22,7 +22,7 @@ find_package(catkin REQUIRED
 #find_package(orocos_kdl REQUIRED)
 #find_package(Eigen REQUIRED)
 
-find_package(Boost 1.53 REQUIRED COMPONENTS atomic)
+find_package(Boost REQUIRED)
 
 include_directories(
   include

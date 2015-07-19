@@ -1,6 +1,6 @@
 <package>
   <name>rtt_ati_sensor</name>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
   <description>This package contains the components of the rtt_ati_sensor package</description>
   <maintainer email="hoarau.robotics@gmail.com">Antoine Hoarau</maintainer>
 
