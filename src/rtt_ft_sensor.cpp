@@ -4,17 +4,17 @@ rtt_ati::FTSensor::FTSensor(std::string const& name) : TaskContext(name){
     calibration_index_ = ati::current_calibration;
     ip_ = "";
     frame_ = rtt_ati::default_frame;
-    
+
     this->addProperty("ip",ip_).doc("(xxx.xxx.xxx.xxx) The IP address for the ATI NET F/T box (default : "+ati::default_ip+" )");
     this->addProperty("frame",frame_).doc("(string) The name of the frame for the wrenchStamped msg (default : "+rtt_ati::default_frame+" )");
     this->addProperty("calibration_index", calibration_index_).doc("(uint) The calibration index to use (default: current)");
 
     this->ports()->addPort("WrenchStamped",this->port_WrenchStamped);
     port_WrenchStamped.createStream(rtt_roscomm::topic(this->getName()+"/wrench"));
-    
-    this->addOperation("setBias",&rtt_ati::FTSensor::setBias,this,RTT::ClientThread);
-    this->addOperation("setBiasROS",&rtt_ati::FTSensor::setBiasROS,this,RTT::ClientThread);
-    
+
+    this->addOperation("setBias",&rtt_ati::FTSensor::setBias,this,RTT::OwnThread);
+    this->addOperation("setBiasROS",&rtt_ati::FTSensor::setBiasROS,this,RTT::OwnThread);
+
     ft_sensor_ = boost::shared_ptr<ati::FTSensor>(new ati::FTSensor());
     set_bias_ = false;
 }
@@ -32,21 +32,21 @@ bool rtt_ati::FTSensor::setBias()
 
 bool rtt_ati::FTSensor::configureHook(){
     bool configured = false;
-        
+
     //  Setting the ROS Service set_bias
     boost::shared_ptr<rtt_rosservice::ROSService> rosservice = this->getProvider<rtt_rosservice::ROSService>("rosservice");
-    
+
     if(rosservice)
         rosservice->connect("setBiasROS",this->getName()+"/set_bias","std_srvs/Empty");
     else
         RTT::log(RTT::Warning) << "ROSService not available" << RTT::endlog();
-    
+
     //  Getting params from the parameter server,  if available
     boost::shared_ptr<rtt_rosparam::ROSParam> rosparam = this->getProvider<rtt_rosparam::ROSParam>("rosparam");
-        
+
     if(!ip_.empty())
         RTT::log(RTT::Warning)<<"Orocos specified ip : " << ip_<<RTT::endlog();
-            
+
     if(rosparam){
         configured = rosparam->getPrivate("ip");
         if(!configured && ip_.empty())
@@ -68,8 +68,8 @@ bool rtt_ati::FTSensor::configureHook(){
         ip_ = ati::default_ip;
         RTT::log(RTT::Warning)<<"ROSParam unavailable and no IP specified, using default ip : " << ati::default_ip<<RTT::endlog();
     }
-    
-    
+
+
     this->port_WrenchStamped.setDataSample(this->wrenchStamped);
     configured = ft_sensor_->init(ip_,calibration_index_,ati::command_s::REALTIME);
     this->wrenchStamped.header.frame_id = frame_;
