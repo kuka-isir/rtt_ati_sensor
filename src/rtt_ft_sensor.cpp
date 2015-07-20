@@ -48,7 +48,7 @@ bool rtt_ati::FTSensor::configureHook(){
         RTT::log(RTT::Warning)<<"Orocos specified ip : " << ip_<<RTT::endlog();
 
     if(rosparam){
-        configured = rosparam->getPrivate("ip");
+        configured = rosparam->getParam(getName() + "/ip","ip");
         if(!configured && ip_.empty())
         {
             ip_ = ati::default_ip;
@@ -56,14 +56,14 @@ bool rtt_ati::FTSensor::configureHook(){
         }else{
             RTT::log(RTT::Info)<<"ROSparam ip provided,  using " << ip_ <<RTT::endlog();
         }
-        configured = rosparam->getPrivate("calibration_index");
+        configured = rosparam->getParam(getName() + "/calibration_index","calibration_index");
         if(!configured && calibration_index_ ==  ati::current_calibration)
         {
             RTT::log(RTT::Warning)<<"ROSParam available, but couldn't get calibration index parameter, using current calibration " <<RTT::endlog();
         }else{
             RTT::log(RTT::Info)<<"ROSparam calibration index provided,  using " << calibration_index_ <<RTT::endlog();
         }
-        configured = rosparam->getPrivate("frame");
+        configured = rosparam->getParam(getName() + "/frame","frame");
     }else if(ip_.empty()){
         ip_ = ati::default_ip;
         RTT::log(RTT::Warning)<<"ROSParam unavailable and no IP specified, using default ip : " << ati::default_ip<<RTT::endlog();
