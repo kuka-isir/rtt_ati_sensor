@@ -72,6 +72,19 @@ bool rtt_ati::FTSensor::configureHook(){
 
     this->port_WrenchStamped.setDataSample(this->wrenchStamped);
     configured = ft_sensor_->init(ip_,calibration_index_,ati::command_s::REALTIME);
+    
+    double current_period = this->getActivity()->getPeriod();
+    double current_rate = 0;
+    if (current_period > 0)
+        current_rate = 1 / current_period;
+    int rdt_rate = ft_sensor_->getRDTRate();
+    
+    if (current_rate <= rdt_rate)
+    {
+      RTT::log(RTT::Warning)<<"Current component activity "<< current_rate << " Hz is lower than RDT output rate "<< rdt_rate << \
+      " Hz and will cause lag in the data. Consider changing the component or the netft box settings" <<RTT::endlog();
+    }
+    
     this->wrenchStamped.header.frame_id = frame_;
     return configured;
 }
