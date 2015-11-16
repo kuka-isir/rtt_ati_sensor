@@ -4,10 +4,14 @@ rtt_ati::FTSensor::FTSensor(std::string const& name) : TaskContext(name){
     calibration_index_ = ati::current_calibration;
     ip_ = "";
     frame_ = rtt_ati::default_frame;
+    read_mode_ = RD_MODE_USER_PERIOD;
+    sample_count_ = rtt_ati::default_sample_count;
 
     this->addProperty("ip",ip_).doc("(xxx.xxx.xxx.xxx) The IP address for the ATI NET F/T box (default : "+ati::default_ip+" )");
+    this->addProperty("read_mode",read_mode_).doc("(int) 0: user period, 1: event-based, 2: event-based at NetFT rate to match user periodicity, 3: user period matching NetFT rate (default : 0)");
     this->addProperty("frame",frame_).doc("(string) The name of the frame for the wrenchStamped msg (default : "+rtt_ati::default_frame+" )");
     this->addProperty("calibration_index", calibration_index_).doc("(uint) The calibration index to use (default: current)");
+    this->addProperty("sample_count", sample_count_).doc("(int) number of samples, also determines the streaming mode (default: -1)");
 
     this->ports()->addPort("WrenchStamped",this->port_WrenchStamped);
     port_WrenchStamped.createStream(rtt_roscomm::topic(this->getName()+"/wrench"));
@@ -69,20 +73,96 @@ bool rtt_ati::FTSensor::configureHook(){
         RTT::log(RTT::Warning)<<"ROSParam unavailable and no IP specified, using default ip : " << ati::default_ip<<RTT::endlog();
     }
 
-
     this->port_WrenchStamped.setDataSample(this->wrenchStamped);
-    configured = ft_sensor_->init(ip_,calibration_index_,ati::command_s::REALTIME);
-    
+
+    if(sample_count_ > 1)
+        configured = ft_sensor_->init(ip_,calibration_index_,ati::command_s::BUFFERED, sample_count_);
+    else
+        configured = ft_sensor_->init(ip_,calibration_index_,ati::command_s::REALTIME, sample_count_);
+
     double current_period = this->getActivity()->getPeriod();
     double current_rate = 0;
     if (current_period > 0)
         current_rate = 1 / current_period;
+        
     int rdt_rate = ft_sensor_->getRDTRate();
     
-    if (current_rate <= rdt_rate)
+    // adapt period setting as requested
+    switch (read_mode_)
     {
-      RTT::log(RTT::Warning)<<"Current component activity "<< current_rate << " Hz is lower than RDT output rate "<< rdt_rate << \
-      " Hz and will cause lag in the data. Consider changing the component or the netft box settings" <<RTT::endlog();
+      case RD_MODE_EVENTBASED_SETRATE:
+        if (rdt_rate != current_rate)
+        {
+          RTT::log(RTT::Warning) << "Changing netft RDT output rate to " << current_rate << " Hz" << RTT::endlog();
+          if (ft_sensor_->setRDTOutputRate(current_rate))
+          {
+            rdt_rate = current_rate;
+            // reinit the sensor to use the new setting
+            if(sample_count_ > 1)
+                configured = ft_sensor_->init(ip_,calibration_index_,ati::command_s::BUFFERED, sample_count_);
+            else
+                configured = ft_sensor_->init(ip_,calibration_index_,ati::command_s::REALTIME, sample_count_);
+          }
+          else
+          {
+            RTT::log(RTT::Warning) << "Could not set RDT output rate. Periodicity might be inadequate" << RTT::endlog();
+          }
+        }
+        // set component activity to 0.0
+        current_period = 0.0;
+        this->getActivity()->setPeriod(current_period);
+        
+        if (sample_count_ != 0)
+        {
+          RTT::log(RTT::Warning) << "Event-based reading mode requested, but request sample count is not infinite, readout frequency will be incorrect" << RTT::endlog();
+        }
+        
+        RTT::log(RTT::Info)<<"NetFT rate: " << rdt_rate <<RTT::endlog();
+        break;
+        
+      case RD_MODE_EVENTBASED:
+        if (current_period != 0.0)
+        {
+          RTT::log(RTT::Warning) << "Event-based reading mode requested, but component has a non zero periodicity, forcing zero periodicity" << RTT::endlog();
+          current_period = 0.0;
+          this->getActivity()->setPeriod(current_period);
+        }
+        
+        if (sample_count_ != 0)
+        {
+          RTT::log(RTT::Warning) << "Event-based reading mode requested, but request sample count is not infinite, readout frequency will be incorrect" << RTT::endlog();
+        }
+        
+        RTT::log(RTT::Info) << "NetFT rate: " << rdt_rate << RTT::endlog();
+        break;
+      
+      case RD_MODE_USER2NETFT:
+        if (current_rate < rdt_rate)
+        {
+          int new_rate = rdt_rate + 1;
+          double new_period = 1.0 / new_rate;
+          RTT::log(RTT::Warning) << "Setting component periodicity to " << new_period << " to be slightly higher than RDT output rate" << RTT::endlog();
+          this->getActivity()->setPeriod(new_period);
+          current_period = new_period;
+        }
+        else
+        {
+          RTT::log(RTT::Warning)<<"Periodicity already higher than RDT output rate. Not changing user periodicity" << RTT::endlog();
+        }
+        
+      case RD_MODE_USER_PERIOD:
+      default:
+        if (sample_count_ == 0)
+        {
+          RTT::log(RTT::Warning) << "User triggered reading mode requested, but request sample count is 0 (infinite) and unknown behaviour is to be expected" << RTT::endlog();
+          RTT::log(RTT::Info) << "NetFT rate: " << rdt_rate << RTT::endlog();
+        }
+        
+        if (current_period == 0.0)
+        {
+          RTT::log(RTT::Warning) << "User triggered reading mode requested, but component periodicity is zero and unknown behaviour is to be expected" << RTT::endlog();
+        }
+        break;
     }
     
     this->wrenchStamped.header.frame_id = frame_;
@@ -105,6 +185,8 @@ void rtt_ati::FTSensor::updateHook(){
         set_bias_ = false;
         ft_sensor_->setBias();
     }
+    if (read_mode_ == RD_MODE_EVENTBASED || read_mode_ == RD_MODE_EVENTBASED_SETRATE)
+      this->trigger();
 }
 
 ORO_CREATE_COMPONENT(rtt_ati::FTSensor)
