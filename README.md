@@ -63,3 +63,29 @@ ros.import("rtt_rospack")
 runScript(ros.find("rtt_ati_sensor") + "/scripts/ft_sensor.ops")
 ```
 
+
+### OPS file options
+
+Two data reading mode are possible: ***User-based trigger*** and ***Event-based trigger***
+
+By default (no parameters given), ***User-based trigger*** is used with given periodicity
+
+#### User-based trigger
+
+The data is queried at the rate of the component set in the ***setActivity*** command
+
+* optional ***ft_sensor.sample_count = 1***
+* ***ft_sensor.read_mode = 0*** for given periodicity 
+* or ***ft_sensor.read_mode = 3*** to match the periodicity to the NetFT output rate.
+ 
+#### Event-based trigger
+
+The data is output at the rate of the NetFT output rate setting. 
+
+This mode should have the smallest delay in the data due to continuous reading.
+
+* ***ft_sensor.sample_count = 0*** (means infinite number of samples)
+* ***ft_sensor.read_mode = 1*** for current NetFT rate 
+* or ***ft_sensor.read_mode = 2*** to set NetFT to given component period via ***setActivity*** (component period is then modified internally to 0.0).
+
+Note, NetFT rate can only be values that 7000 / integer can reach (7000, 3500, 2333, 1750, 1400, 1167, 1000, ...)
