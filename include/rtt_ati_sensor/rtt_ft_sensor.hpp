@@ -16,6 +16,11 @@
 #include <std_srvs/Empty.h>
 #include <rtt_roscomm/rosservice.h>
 
+#define  RD_MODE_USER_PERIOD  0
+#define  RD_MODE_EVENTBASED   1
+#define  RD_MODE_EVENTBASED_SETRATE   2
+#define  RD_MODE_USER2NETFT 3
+
 /**
  * @brief Namespace containing all rtt related elements. Same as ati namespace for libati_sensor
  *
@@ -26,6 +31,7 @@ namespace rtt_ati{
   *
   */
 static const std::string default_frame = "/ati_ft_link";
+static const int default_sample_count = -1;
 /**
  * @brief This class is a simple RTT wrapper around ati::FTSensor class from libati_sensor.
  *
@@ -79,6 +85,14 @@ protected:
      */
     std::string ip_;
     /**
+     * @brief The read mode of the component
+     * 0: user read rate, do not change anything (default)
+     * 1: event-based read 
+     * 2: event-based read, and change NetFT RDT Output rate to match component activity
+     * 3: user read rate, and change periodicity to match NetFT Output rate
+     */
+    int read_mode_;
+    /**
      * @brief The Orocos output port "wrench"
      *
      */
@@ -122,6 +136,14 @@ protected:
      *
      */
     std::string frame_;
+    /**
+     * @brief The number of samples determines the streaming mode:
+     * -1: use default values
+     * 0: continuous streaming at netft speed
+     * 1: continuous 1 sample query, at user request rate
+     * 2 or more: buffered mode, at user request rate
+     */
+    int sample_count_;
     RTT::os::Mutex lock_;
     bool set_bias_;
 };
