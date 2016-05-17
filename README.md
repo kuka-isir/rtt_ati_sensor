@@ -3,6 +3,9 @@
 
 Simple Orocos RTT wrapper for the ati_sensor library. It uses ROS to get parameters from the parameter server and ROS services to reset the bias.
 
+###### OROCOS Port 
+* ***WrenchStamped*** (geometry_msgs/WrenchStamped): 6D data from the F/T sensor
+
 ###### Parameters
 * ***ip*** (string, default : 192.168.100.103) : The ip of the sensor 
 * ***calibration_index*** (integer, default : -1 [current]): The calibration file to use 
