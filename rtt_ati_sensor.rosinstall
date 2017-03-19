@@ -1,0 +1,2 @@
+- git: {local-name: rtt_ati_sensor, uri: 'https://github.com/kuka-isir/rtt_ati_sensor'}
+- git: {local-name: ati_sensor, uri: 'https://github.com/kuka-isir/ati_sensor'}

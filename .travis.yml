@@ -1,35 +1,21 @@
-language:
-  - cpp
-  
-python:
-  - "2.7"
 sudo: required
+dist: trusty
+language: generic
 
-compiler:
-  - gcc
-  
-before_install:
-  - export ROS_DISTRO=hydro
-  - export CI_SOURCE_PATH=$(pwd)
-  # Install ROS
-  - sudo sh -c "echo 'deb http://packages.ros.org/ros/ubuntu $(lsb_release -cs) main' > /etc/apt/sources.list.d/ros-latest.list"
-  - wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
-  - sudo apt-get update
-  - sudo apt-get install -y  ros-$ROS_DISTRO-desktop ros-$ROS_DISTRO-orocos-toolchain ros-$ROS_DISTRO-rtt ros-$ROS_DISTRO-rtt-ros-integration
-  - source /opt/ros/$ROS_DISTRO/setup.bash
-  - sudo -E rosdep init
-  - rosdep update
-  - export OROCOS_TARGET=gnulinux
-  - mkdir -p ~/catkin_ws/src
-  - cd ~/catkin_ws/src
-  - catkin_init_workspace
-  - ln -s $CI_SOURCE_PATH
-  - git clone https://github.com/kuka-isir/ati_sensor.git
-  
+env:
+  global:
+    - UPSTREAM_WORKSPACE=https://raw.githubusercontent.com/kuka-isir/rtt_ati_sensor/master/rtt_ati_sensor.rosinstall
+    - ROS_REPOSITORY_PATH=http://packages.ros.org/ros/ubuntu
+  matrix:
+    - ROS_DISTRO="indigo"
+    - ROS_DISTRO="jade"
+    - ROS_DISTRO="kinetic"
+
+matrix:
+  allow_failures:
+    - env: ROS_DISTRO="kinetic"
+
 install:
-  - cd ~/catkin_ws
-  - catkin_make -j2 -DCMAKE_BUILD_TYPE=Debug
-
+  - git clone https://github.com/ros-industrial/industrial_ci.git .ci_config
 script:
-  - source devel/setup.bash
-  - catkin_make
+  - source .ci_config/travis.sh
