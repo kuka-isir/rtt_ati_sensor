@@ -9,7 +9,6 @@
 #include <ati_sensor/ft_sensor.h>
 #include <geometry_msgs/WrenchStamped.h>
 #include <rtt_rosclock/rtt_rosclock.h>
-#include <rtt_roscomm/rtt_rostopic.h>
 #include <rtt_rosparam/rosparam.h>
 #include <rtt_ros/rtt_ros.h>
 #include <std_msgs/Empty.h>
