@@ -1,4 +1,8 @@
 #include "rtt_ati_sensor/rtt_ft_sensor.hpp"
+#include <rtt_rosclock/rtt_rosclock.h>
+#include <rtt_roscomm/rtt_rostopic.h>
+#include <rtt_rosparam/rosparam.h>
+#include <rtt_ros/rtt_ros.h>
 
 rtt_ati::FTSensor::FTSensor(std::string const& name) : TaskContext(name){
     calibration_index_ = ati::current_calibration;
