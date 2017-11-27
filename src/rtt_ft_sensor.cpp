@@ -173,9 +173,9 @@ bool rtt_ati::FTSensor::configureHook(){
     return configured;
 }
 
-void rtt_ati::FTSensor::updateHook(){
+void rtt_ati::FTSensor::updateHook()
+{
     ft_sensor_->getMeasurements(this->measurement,this->rdt_sequence,this->ft_sequence);
-    lock_.unlock();
     this->wrenchStamped.header.stamp = rtt_rosclock::host_now();
     this->wrenchStamped.header.seq = this->ft_sequence;
     this->wrenchStamped.wrench.force.x = measurement[0];

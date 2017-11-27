@@ -140,7 +140,6 @@ protected:
      * 2 or more: buffered mode, at user request rate
      */
     int sample_count_;
-    RTT::os::Mutex lock_;
     bool set_bias_;
 };
 }
