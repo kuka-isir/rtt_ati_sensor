@@ -60,6 +60,11 @@ install(DIRECTORY include/${PROJECT_NAME}/
   PATTERN ".svn" EXCLUDE
   )
   
+install(DIRECTORY launch/
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+    PATTERN ".svn" EXCLUDE)
+
+install(FILES scripts/ft_sensor.ops DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/scripts)
   
 ###################
 ## Documentation ##
